@@ -6,6 +6,7 @@ import Button from '../components/ui/Button';
 import Spinner from '../components/ui/Spinner';
 import BudgetModal from '../components/budgets/BudgetModal';
 import { createBudget } from '../api/budgets';
+import { useDataRefresh } from '../context/DataRefreshContext';
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -17,6 +18,7 @@ export default function BudgetsPage() {
 
   const { budgets, loading, refetch } = useBudgets(month, year);
   const { categories } = useCategories();
+  const { triggerRefresh } = useDataRefresh();
 
   const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long', year: 'numeric' });
 
@@ -35,6 +37,7 @@ export default function BudgetsPage() {
       toast.success('Budget set');
       setModalOpen(false);
       refetch();
+      triggerRefresh();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to set budget');
     }

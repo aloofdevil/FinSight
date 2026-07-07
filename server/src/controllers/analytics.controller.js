@@ -25,4 +25,22 @@ const monthlyTrend = asyncHandler(async (req, res) => {
   res.json({ success: true, data });
 });
 
-module.exports = { summary, categoryBreakdown, monthlyTrend };
+const topSpendingDay = asyncHandler(async (req, res) => {
+  const now = new Date();
+  const month = parseInt(req.query.month) || now.getMonth() + 1;
+  const year = parseInt(req.query.year) || now.getFullYear();
+
+  const data = await analyticsService.topSpendingDay(req.user.id, month, year);
+  res.json({ success: true, data });
+});
+
+const avgTransaction = asyncHandler(async (req, res) => {
+  const now = new Date();
+  const month = parseInt(req.query.month) || now.getMonth() + 1;
+  const year = parseInt(req.query.year) || now.getFullYear();
+
+  const data = await analyticsService.avgTransaction(req.user.id, month, year);
+  res.json({ success: true, data });
+});
+
+module.exports = { summary, categoryBreakdown, monthlyTrend, topSpendingDay, avgTransaction };

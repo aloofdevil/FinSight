@@ -123,4 +123,55 @@ const monthlyTrend = async (userId, numMonths = 6) => {
   ]);
 };
 
-module.exports = { summary, categoryBreakdown, monthlyTrend };
+const topSpendingDay = async (userId, month, year) => {
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 0, 23, 59, 59);
+
+  const result = await Expense.aggregate([
+    {
+      $match: {
+        userId: mongoose.Types.ObjectId.createFromHexString(userId),
+        type: 'expense',
+        date: { $gte: start, $lte: end }
+      }
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
+        total: { $sum: '$amount' },
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { total: -1 } },
+    { $limit: 1 }
+  ]);
+
+  return result[0] || { _id: null, total: 0, count: 0 };
+};
+
+const avgTransaction = async (userId, month, year) => {
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 0, 23, 59, 59);
+
+  const result = await Expense.aggregate([
+    {
+      $match: {
+        userId: mongoose.Types.ObjectId.createFromHexString(userId),
+        type: 'expense',
+        date: { $gte: start, $lte: end }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        avgAmount: { $avg: '$amount' },
+        maxAmount: { $max: '$amount' },
+        minAmount: { $min: '$amount' }
+      }
+    }
+  ]);
+
+  return result[0] || { avgAmount: 0, maxAmount: 0, minAmount: 0 };
+};
+
+module.exports = { summary, categoryBreakdown, monthlyTrend, topSpendingDay, avgTransaction };

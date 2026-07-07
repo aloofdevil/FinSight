@@ -8,12 +8,14 @@ import Pagination from '../components/ui/Pagination';
 import Button from '../components/ui/Button';
 import Spinner from '../components/ui/Spinner';
 import { createExpense, updateExpense, deleteExpense } from '../api/expenses';
+import { useDataRefresh } from '../context/DataRefreshContext';
 import { Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function ExpensesPage() {
   const { categories } = useCategories();
   const { expenses, pagination, loading, query, updateQuery, refetch } = useExpenses({ limit: 20 });
+  const { triggerRefresh } = useDataRefresh();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
@@ -34,6 +36,7 @@ export default function ExpensesPage() {
       setModalOpen(false);
       setEditing(null);
       refetch();
+      triggerRefresh();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save');
     }
@@ -45,6 +48,7 @@ export default function ExpensesPage() {
       await deleteExpense(id);
       toast.success('Transaction deleted');
       refetch();
+      triggerRefresh();
     } catch {
       toast.error('Failed to delete');
     }
