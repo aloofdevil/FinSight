@@ -1,0 +1,14 @@
+{
+  "name": "finsight",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FinSight personal expense tracker",
+  "scripts": {
+    "client": "npm --prefix client run dev -- --host 127.0.0.1",
+    "server": "npm --prefix server run dev",
+    "build": "npm --prefix client run build",
+    "lint": "npm --prefix client run lint",
+    "seed": "npm --prefix server run seed",
+    "start": "npm --prefix server start"
+  }
+}
